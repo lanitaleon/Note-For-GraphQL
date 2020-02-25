@@ -1,0 +1,31 @@
+type Query {
+  bookById(id: Int): Book
+  listBook: [Book]
+  booksByAuthor(authorId: Int): [Book]
+  booksByAuthorName(authorName: String): [Book]
+  booksByNameAndAuthor(name: String, authorId: Int): [Book]
+}
+
+type Mutation {
+  addBook(name: String, pageCount: Int, authorId: Int): Book
+}
+
+type Book {
+  id: Int
+  name: String
+  pageCount: Int
+  author: Author
+}
+
+type Author {
+  id: Int
+  firstName: String
+  lastName: String
+  age: AuthorAge
+}
+
+enum AuthorAge {
+    YOUNG,
+    OLD,
+    INFANT
+}
