@@ -3,6 +3,7 @@ package com.gig.meko.util;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import graphql.GraphQL;
+import graphql.execution.SubscriptionExecutionStrategy;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -27,6 +28,8 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 public class GraphQLProvider {
     private GraphQL graphQL;
 
+    private GraphQLSchema graphQLSchema;
+
     @Resource
     private GraphQLDataFetchers graphQLDataFetchers;
 
@@ -39,8 +42,14 @@ public class GraphQLProvider {
     public void init() throws IOException {
         URL url = Resources.getResource("schema.graphqls");
         String sdl = Resources.toString(url, Charsets.UTF_8);
-        GraphQLSchema graphQLSchema = buildSchema(sdl);
-        this.graphQL = GraphQL.newGraphQL(graphQLSchema).build();
+        graphQLSchema = buildSchema(sdl);
+        this.graphQL = GraphQL.newGraphQL(graphQLSchema)
+                .subscriptionExecutionStrategy(new SubscriptionExecutionStrategy())
+                .build();
+    }
+
+    public GraphQLSchema getGraphQLSchema() {
+        return graphQLSchema;
     }
 
     private GraphQLSchema buildSchema(String sdl) {
@@ -64,6 +73,10 @@ public class GraphQLProvider {
                         .dataFetcher("author", graphQLDataFetchers.getAuthor()))
                 .type(newTypeWiring("Mutation")
                         .dataFetcher("addBook", graphQLDataFetchers.addBook()))
+                .type(newTypeWiring("Mutation")
+                        .dataFetcher("updateBookName", graphQLDataFetchers.updateBookName()))
+                .type(newTypeWiring("Subscription")
+                        .dataFetcher("publishBook", graphQLDataFetchers.publishBook()))
                 .build();
     }
 

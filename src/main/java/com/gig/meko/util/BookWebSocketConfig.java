@@ -8,18 +8,18 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 @Configuration
 @EnableWebSocket
-public class StocktickerWebSocketConfig implements WebSocketConfigurer {
+public class BookWebSocketConfig implements WebSocketConfigurer {
 
     private final StockTickerGraphqlPublisher stockTickerGraphqlPublisher;
 
     @Autowired
-    public StocktickerWebSocketConfig(StockTickerGraphqlPublisher stockTickerGraphqlPublisher) {
+    public BookWebSocketConfig(StockTickerGraphqlPublisher stockTickerGraphqlPublisher) {
         this.stockTickerGraphqlPublisher = stockTickerGraphqlPublisher;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new StockTickerWebSocketHandler(stockTickerGraphqlPublisher), "/stockticker").setAllowedOrigins("*");
+        registry.addHandler(new BookWebSocketHandler(stockTickerGraphqlPublisher), "/stockticker").setAllowedOrigins("*");
     }
 }
 

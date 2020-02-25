@@ -123,13 +123,29 @@ http://www.zhaiqianfeng.com/2017/06/learn-graphql-action-by-javascript.html
 
 - Subscription
 
-http://blog.mygraphql.com/wordpress/?p=106
+见下一节
 
 #### 1.2Subscription
 
+官方文档
+
 https://www.graphql-java.com/documentation/v14/subscriptions/
 
-订阅
+官方文档的翻译版本
+
+http://blog.mygraphql.com/wordpress/?p=106
+
+订阅机制背景介绍，为什么选择事件驱动的订阅机制，订阅可以实现什么。
+
+https://graphql.org/blog/subscriptions-in-graphql-and-relay/
+
+示例代码：
+
+https://github.com/graphql-java/graphql-java-examples/tree/master/subscription-example
+
+使用RxJava2实现订阅发布机制，参考文档：
+
+[Observable是如何工作的](https://www.jianshu.com/p/e432df0603e8)
 
 
 

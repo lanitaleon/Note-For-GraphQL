@@ -1,7 +1,8 @@
 package com.gig.meko.util;
 
-import com.graphql.java.subscription.utill.JsonKit;
-import com.graphql.java.subscription.utill.QueryParameters;
+//import com.graphql.java.subscription.utill.JsonKit;
+//import com.graphql.java.subscription.utill.QueryParameters;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
@@ -23,14 +24,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.Collections.singletonList;
 
-public class StockTickerWebSocketHandler extends TextWebSocketHandler {
+public class BookWebSocketHandler extends TextWebSocketHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(StockTickerWebSocketHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(BookWebSocketHandler.class);
 
-    private final StockTickerGraphqlPublisher graphqlPublisher;
+    private final GraphQLProvider graphqlPublisher;
     private final AtomicReference<Subscription> subscriptionRef;
 
-    public StockTickerWebSocketHandler(StockTickerGraphqlPublisher graphqlPublisher) {
+    public BookWebSocketHandler(GraphQLProvider graphqlPublisher) {
         this.graphqlPublisher = graphqlPublisher;
         subscriptionRef = new AtomicReference<>();
     }
@@ -54,14 +55,6 @@ public class StockTickerWebSocketHandler extends TextWebSocketHandler {
         String graphqlQuery = message.getPayload();
         log.info("Websocket said {}", graphqlQuery);
 
-        QueryParameters parameters = QueryParameters.from(graphqlQuery);
-
-        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
-                .query(parameters.getQuery())
-                .variables(parameters.getVariables())
-                .operationName(parameters.getOperationName())
-                .build();
-
         Instrumentation instrumentation = new ChainedInstrumentation(
                 singletonList(new TracingInstrumentation())
         );
@@ -75,7 +68,7 @@ public class StockTickerWebSocketHandler extends TextWebSocketHandler {
                 .instrumentation(instrumentation)
                 .build();
 
-        ExecutionResult executionResult = graphQL.execute(executionInput);
+        ExecutionResult executionResult = graphQL.execute(graphqlQuery);
 
         Publisher<ExecutionResult> stockPriceStream = executionResult.getData();
 
@@ -93,7 +86,7 @@ public class StockTickerWebSocketHandler extends TextWebSocketHandler {
                 log.debug("Sending stick price update");
                 try {
                     Object stockPriceUpdate = er.getData();
-                    String json = JsonKit.toJsonString(stockPriceUpdate);
+                    String json = new ObjectMapper().writeValueAsString(stockPriceUpdate);
                     webSocketSession.sendMessage(new TextMessage(json));
                 } catch (IOException e) {
                     e.printStackTrace();

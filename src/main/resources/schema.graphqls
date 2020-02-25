@@ -8,6 +8,11 @@ type Query {
 
 type Mutation {
   addBook(name: String, pageCount: Int, authorId: Int): Book
+  updateBookName(id: Int, name: String): Book
+}
+
+type Subscription {
+  publishBook(id: Int): Book
 }
 
 type Book {

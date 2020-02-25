@@ -5,6 +5,8 @@ import com.gig.meko.entity.Book;
 import com.gig.meko.repo.AuthorRepo;
 import com.gig.meko.repo.BookRepo;
 import graphql.schema.DataFetcher;
+import graphql.schema.DataFetchingEnvironment;
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
  */
 @Component
 public class GraphQLDataFetchers {
+    private final static BookPublisher BOOK_PUBLISHER = new BookPublisher();
 
     @Resource
     private BookRepo bookRepo;
@@ -87,6 +90,24 @@ public class GraphQLDataFetchers {
             Book book = new Book(name, pageCount, author);
             bookRepo.save(book);
             return book;
+        };
+    }
+
+    public DataFetcher updateBookName() {
+        return dataFetchingEnvironment -> {
+            Integer bookId = dataFetchingEnvironment.getArgument("id");
+            String name = dataFetchingEnvironment.getArgument("name");
+            Book book = bookRepo.findById(bookId).orElseThrow(()->new RuntimeException("book not exist"));
+            book.setName(name);
+            bookRepo.save(book);
+            return book;
+        };
+    }
+
+    public DataFetcher publishBook() {
+        return dataFetchingEnvironment ->  {
+            Integer bookId = dataFetchingEnvironment.getArgument("id");
+            return BOOK_PUBLISHER.getPublisher(bookId);
         };
     }
 }
