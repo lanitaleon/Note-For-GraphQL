@@ -70,9 +70,9 @@ public class BookWebSocketHandler extends TextWebSocketHandler {
 
         ExecutionResult executionResult = graphQL.execute(graphqlQuery);
 
-        Publisher<ExecutionResult> stockPriceStream = executionResult.getData();
+        Publisher<ExecutionResult> bookStream = executionResult.getData();
 
-        stockPriceStream.subscribe(new Subscriber<ExecutionResult>() {
+        bookStream.subscribe(new Subscriber<ExecutionResult>() {
 
             @Override
             public void onSubscribe(Subscription s) {
@@ -85,8 +85,8 @@ public class BookWebSocketHandler extends TextWebSocketHandler {
                 System.out.println("subscribe next");
                 log.debug("Sending stick price update");
                 try {
-                    Object stockPriceUpdate = er.getData();
-                    String json = new ObjectMapper().writeValueAsString(stockPriceUpdate);
+                    Object book = er.getData();
+                    String json = new ObjectMapper().writeValueAsString(book);
                     webSocketSession.sendMessage(new TextMessage(json));
                 } catch (IOException e) {
                     e.printStackTrace();

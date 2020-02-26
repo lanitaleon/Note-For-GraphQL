@@ -10,16 +10,16 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class BookWebSocketConfig implements WebSocketConfigurer {
 
-    private final StockTickerGraphqlPublisher stockTickerGraphqlPublisher;
+    private final GraphQLProvider graphQLProvider;
 
     @Autowired
-    public BookWebSocketConfig(StockTickerGraphqlPublisher stockTickerGraphqlPublisher) {
-        this.stockTickerGraphqlPublisher = stockTickerGraphqlPublisher;
+    public BookWebSocketConfig(GraphQLProvider graphQLProvider) {
+        this.graphQLProvider = graphQLProvider;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new BookWebSocketHandler(stockTickerGraphqlPublisher), "/stockticker").setAllowedOrigins("*");
+        registry.addHandler(new BookWebSocketHandler(graphQLProvider), "/publishBook").setAllowedOrigins("*");
     }
 }
 

@@ -149,6 +149,8 @@ https://github.com/graphql-java/graphql-java-examples/tree/master/subscription-e
 
 
 
+
+
 ### 2.Data fetching
 
 https://www.graphql-java.com/documentation/v14/data-fetching/
