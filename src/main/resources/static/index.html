@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Subscriptions over Web Sockets</title>
+    <script src="./jquery.min.js"></script>
+    <script>
+        function networkBlip() {
+            var $networking = $('.networking');
+            if (!$networking.is(":visible")) {
+                $networking.show(100, function () {
+                    var $that = $(this);
+                    setTimeout(function () {
+                        $that.hide();
+                    }, 500)
+                });
+            }
+        }
+        function subscribeToStocks() {
+            var exampleSocket = new WebSocket("ws://localhost:8080/publishBook");
+            networkBlip();
+            exampleSocket.onopen = function () {
+                networkBlip();
+                console.log("web socket opened");
+
+                var query = 'subscription BookSubscription { \n' +
+                    '    publishBook(id: 3) {' +
+                    '       id\n' +
+                    '       name\n' +
+                    '       pageCount\n' +
+                    '     }' +
+                    '}';
+                var graphqlMsg = {
+                    query: query,
+                    variables: {}
+                };
+                exampleSocket.send(JSON.stringify(graphqlMsg));
+            };
+            exampleSocket.onmessage = function (event) {
+                networkBlip();
+                var data = event.data;
+                console.log(data);
+            };
+        }
+        window.addEventListener("load", subscribeToStocks);
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+    test page
+    </div>
+</div>
+</body>
+</html>

@@ -54,7 +54,12 @@ public class BookWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession webSocketSession, TextMessage message) throws Exception {
         String graphqlQuery = message.getPayload();
         log.info("Websocket said {}", graphqlQuery);
-
+        QueryParameters parameters = QueryParameters.from(graphqlQuery);
+        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                .query(parameters.getQuery())
+                .variables(parameters.getVariables())
+                .operationName(parameters.getOperationName())
+                .build();
         Instrumentation instrumentation = new ChainedInstrumentation(
                 singletonList(new TracingInstrumentation())
         );
@@ -68,7 +73,7 @@ public class BookWebSocketHandler extends TextWebSocketHandler {
                 .instrumentation(instrumentation)
                 .build();
 
-        ExecutionResult executionResult = graphQL.execute(graphqlQuery);
+        ExecutionResult executionResult = graphQL.execute(executionInput);
 
         Publisher<ExecutionResult> bookStream = executionResult.getData();
 
@@ -76,6 +81,7 @@ public class BookWebSocketHandler extends TextWebSocketHandler {
 
             @Override
             public void onSubscribe(Subscription s) {
+                System.out.println("sub");
                 subscriptionRef.set(s);
                 request(1);
             }
