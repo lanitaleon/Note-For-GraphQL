@@ -1,7 +1,5 @@
 package com.gig.meko.util;
 
-//import com.graphql.java.subscription.utill.JsonKit;
-//import com.graphql.java.subscription.utill.QueryParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
@@ -29,7 +27,7 @@ public class BookWebSocketHandler extends TextWebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(BookWebSocketHandler.class);
 
     private final GraphQLProvider graphqlPublisher;
-    private final AtomicReference<Subscription> subscriptionRef;
+    public final AtomicReference<Subscription> subscriptionRef;
 
     public BookWebSocketHandler(GraphQLProvider graphqlPublisher) {
         this.graphqlPublisher = graphqlPublisher;
@@ -97,6 +95,7 @@ public class BookWebSocketHandler extends TextWebSocketHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                System.out.println("sub2");
                 request(1);
             }
 
@@ -122,7 +121,7 @@ public class BookWebSocketHandler extends TextWebSocketHandler {
         });
     }
 
-    private void request(int n) {
+    public void request(int n) {
         Subscription subscription = subscriptionRef.get();
         if (subscription != null) {
             subscription.request(n);

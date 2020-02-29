@@ -37,9 +37,9 @@
                 exampleSocket.send(JSON.stringify(graphqlMsg));
             };
             exampleSocket.onmessage = function (event) {
+                console.log('message');
+                console.log(event);
                 networkBlip();
-                var data = event.data;
-                console.log(data);
             };
         }
         window.addEventListener("load", subscribeToStocks);

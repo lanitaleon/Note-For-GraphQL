@@ -5,16 +5,16 @@ import com.gig.meko.entity.Book;
 import com.gig.meko.repo.AuthorRepo;
 import com.gig.meko.repo.BookRepo;
 import graphql.schema.DataFetcher;
-import graphql.schema.DataFetchingEnvironment;
-import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * resolver
+ *
  * @author spp
  */
 @Component
@@ -97,15 +97,31 @@ public class GraphQLDataFetchers {
         return dataFetchingEnvironment -> {
             Integer bookId = dataFetchingEnvironment.getArgument("id");
             String name = dataFetchingEnvironment.getArgument("name");
-            Book book = bookRepo.findById(bookId).orElseThrow(()->new RuntimeException("book not exist"));
+            Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("book not exist"));
             book.setName(name);
             bookRepo.save(book);
+            List<Book> books = BOOK_PUBLISHER.getBooks();
+            if (BOOK_PUBLISHER.getBooks() == null) {
+                BOOK_PUBLISHER.setBooks(new ArrayList<>());
+                books = BOOK_PUBLISHER.getBooks();
+            }
+            boolean notExists = true;
+            for (Book tempBook : books) {
+                if (tempBook.getId().equals(book.getId())) {
+                    tempBook.setName(book.getName());
+                    notExists = false;
+                    break;
+                }
+            }
+            if (notExists) {
+                BOOK_PUBLISHER.getBooks().add(book);
+            }
             return book;
         };
     }
 
     public DataFetcher publishBook() {
-        return dataFetchingEnvironment ->  {
+        return dataFetchingEnvironment -> {
             Integer bookId = dataFetchingEnvironment.getArgument("id");
             return BOOK_PUBLISHER.getPublisher(bookId);
         };

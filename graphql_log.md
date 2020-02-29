@@ -162,3 +162,11 @@ https://www.graphql-java.com/documentation/v14/data-fetching/
 分页
 
 权限
+
+
+
+
+
+发现了一个详细分析graphQL的博客：
+
+http://blog.mygraphql.com/wordpress/?cat=2
