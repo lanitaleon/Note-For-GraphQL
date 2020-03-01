@@ -170,3 +170,9 @@ https://www.graphql-java.com/documentation/v14/data-fetching/
 发现了一个详细分析graphQL的博客：
 
 http://blog.mygraphql.com/wordpress/?cat=2
+
+
+
+跟restful对比——什么是restful
+
+http://blog.bhusk.com/articles/2018/05/24/1527167962745
