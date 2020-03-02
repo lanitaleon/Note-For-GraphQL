@@ -1,9 +1,14 @@
 package com.gig.meko.util;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import graphql.ExecutionInput;
 import graphql.GraphQL;
 import graphql.execution.SubscriptionExecutionStrategy;
+import graphql.execution.preparsed.PreparsedDocumentEntry;
+import graphql.execution.preparsed.PreparsedDocumentProvider;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -16,6 +21,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.net.URL;
+import java.util.function.Function;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
@@ -40,10 +46,18 @@ public class GraphQLProvider {
 
     @PostConstruct
     public void init() throws IOException {
+        Cache<String, PreparsedDocumentEntry> cache = Caffeine.newBuilder().maximumSize(10_000).build();
+        PreparsedDocumentProvider preparsedDocumentProvider =
+                (ExecutionInput executionInput, Function<ExecutionInput, PreparsedDocumentEntry> function) -> {
+            Function<String, PreparsedDocumentEntry> mapCompute = key -> function.apply(executionInput);
+            return cache.get(executionInput.getQuery(), mapCompute);
+        };
+
         URL url = Resources.getResource("schema.graphqls");
         String sdl = Resources.toString(url, Charsets.UTF_8);
         graphQLSchema = buildSchema(sdl);
         this.graphQL = GraphQL.newGraphQL(graphQLSchema)
+                .preparsedDocumentProvider(preparsedDocumentProvider)
                 .subscriptionExecutionStrategy(new SubscriptionExecutionStrategy())
                 .build();
     }

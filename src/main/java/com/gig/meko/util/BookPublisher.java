@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class BookPublisher {
     private final Flowable<Book> bookFlowable;
-    public List<Book> books;
+    private List<Book> books;
 
     public List<Book> getBooks() {
         return books;
@@ -45,19 +45,15 @@ public class BookPublisher {
     }
 
     private Runnable newBooks(ObservableEmitter<Book> emitter) {
-        return () -> {
-            emitBooks(emitter);
-        };
+        return () -> emitBooks(emitter);
     }
 
     private void emitBooks(ObservableEmitter<Book> emitter) {
-        if (books == null) {
-            System.out.println("null");
+        if (getBooks() == null) {
             return;
         }
-        for (Book book : books) {
+        for (Book book : getBooks()) {
             try {
-                System.out.println(book.getId());
                 // 发送一次数据
                 emitter.onNext(book);
             } catch (RuntimeException rte) {
@@ -67,8 +63,6 @@ public class BookPublisher {
     }
 
     public Flowable<Book> getPublisher(Integer bookId) {
-        System.out.println("pub");
-        return bookFlowable.filter(book -> bookId.equals(book.getId()));
+        return bookFlowable.filter(book -> book.getId() != null && book.getId().equals(bookId));
     }
-
 }

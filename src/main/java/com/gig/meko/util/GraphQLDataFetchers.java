@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -106,11 +107,14 @@ public class GraphQLDataFetchers {
                 books = BOOK_PUBLISHER.getBooks();
             }
             boolean notExists = true;
-            for (Book tempBook : books) {
-                if (tempBook.getId().equals(book.getId())) {
-                    tempBook.setName(book.getName());
+            Iterator<Book> iterator = books.listIterator();
+            while (iterator.hasNext()) {
+                Book tempBook = iterator.next();
+                if (tempBook.getId() == null) {
+                    iterator.remove();
+                } else if (tempBook.getId().equals(bookId)) {
                     notExists = false;
-                    break;
+                    tempBook.setName(name);
                 }
             }
             if (notExists) {
