@@ -363,11 +363,23 @@ query HelloTo($to: String!) {
 
 
 
+### 4.Visibility
+
+https://www.graphql-java.com/documentation/v14/fieldvisibility/
+
+context如何操作，是否类似session
+
+customFieldVisibility在何时调用
+
+http://blog.mygraphql.com/wordpress/?p=118
+
+
+
+[springboot环境下GraphQL权限认证的实现方法](https://www.jianshu.com/p/3ca353dad27d)
+
 
 
 分页
-
-权限
 
 
 

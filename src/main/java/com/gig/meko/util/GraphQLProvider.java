@@ -33,7 +33,6 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 @Component
 public class GraphQLProvider {
     private GraphQL graphQL;
-
     private GraphQLSchema graphQLSchema;
 
     @Resource
@@ -49,9 +48,9 @@ public class GraphQLProvider {
         Cache<String, PreparsedDocumentEntry> cache = Caffeine.newBuilder().maximumSize(10_000).build();
         PreparsedDocumentProvider preparsedDocumentProvider =
                 (ExecutionInput executionInput, Function<ExecutionInput, PreparsedDocumentEntry> function) -> {
-            Function<String, PreparsedDocumentEntry> mapCompute = key -> function.apply(executionInput);
-            return cache.get(executionInput.getQuery(), mapCompute);
-        };
+                    Function<String, PreparsedDocumentEntry> mapCompute = key -> function.apply(executionInput);
+                    return cache.get(executionInput.getQuery(), mapCompute);
+                };
 
         URL url = Resources.getResource("schema.graphqls");
         String sdl = Resources.toString(url, Charsets.UTF_8);
